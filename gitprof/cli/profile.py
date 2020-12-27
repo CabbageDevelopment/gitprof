@@ -40,12 +40,17 @@ def profile():
 
 
 @profile.command("create", help="Add a new profile")
-@click.argument("name")
+@click.argument("name", required=False)
 @click.option("--username", help="Your username for the service (e.g. GitHub)")
 def create_profile(name: str, username: str = None):
-    ux.print_header(f"Creating profile: {name}")
+    name = name or ux.get_simple_input(
+        question="Enter a name for your profile (e.g. 'github')",
+        validator=lambda i: i,
+    )
 
+    ux.print_header(f"Creating profile: {name}")
     config = Config()
+
     if config.get_profile(name):
         click.echo(
             f"Profile '{name}' already exists. Please edit it instead of creating a new one.",
@@ -128,7 +133,7 @@ def create_profile(name: str, username: str = None):
     config.add_profile(profile)
     config.save()
 
-    click.echo(f"Saved profile: {name}")
+    click.echo(f"Saved profile: {profile.name}")
 
 
 @profile.command("apply", help="Apply profile to current repository")

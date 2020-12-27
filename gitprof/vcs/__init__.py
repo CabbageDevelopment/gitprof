@@ -19,19 +19,3 @@
 #  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
-import os
-
-from gitprof.cli import root
-
-__version__ = "1.0.0"
-
-
-def get_version_message():
-    return f"GitProf v{__version__} is installed at '{os.path.dirname(os.path.abspath(__file__))}'"
-
-
-def init():
-    """
-    Entry-point when gitprof is called as a standalone executable.
-    """
-    root()

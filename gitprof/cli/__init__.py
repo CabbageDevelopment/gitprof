@@ -20,11 +20,17 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 import click
+import gitprof
 
 
 @click.group()
 def root():
     pass
+
+
+@root.command("version", help="Show GitProf version")
+def version():
+    print(gitprof.get_version_message())
 
 
 from gitprof.cli.clone import clone
