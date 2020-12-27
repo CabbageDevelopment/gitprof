@@ -1,12 +1,12 @@
 # GitProf
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![PyPI](https://img.shields.io/pypi/v/gitprof)](https://pypi.org/project/gitprof)
-![PyPI - Python Version](https://img.shields.io/pypi/pyversions/gitprof)
+[![PyPI](https://img.shields.io/pypi/v/gitprof?color=brightgreen)](https://pypi.org/project/gitprof)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/gitprof?color=blue)](https://pypi.org/project/gitprof)
 
 ## Introduction
 
-GitProf ("Git Profiles") is a tool which simplifies working with multiple Git accounts.
+GitProf ("Git Profiles") is a tool which simplifies working with multiple Git accounts/services.
 
 GitProf helps you with:
 
@@ -15,7 +15,7 @@ GitProf helps you with:
 
 It solves the problems which you may experience when using multiple accounts/services:
 
-- You can't clone a repository easily because your default SSH key is for a different account/service.
+- You can't clone a repository easily because your default SSH key is for a different account.
 - Once you clone the repository, local Git config values such as `user.email` need to be set correctly.
 
 GitProf doesn't change your Git workflow; after using `gitprof clone` or `gitprof profile apply` on a repository, you don't need to interact with `gitprof` again for that repository. 
@@ -46,7 +46,7 @@ GitProf stores *profiles* which contain the information required to configure re
 To clone a repository, just use `gitprof clone` instead of `git clone`. For example:
 
 ```bash
->> gitprof clone git@github.com/some-profile/some-repo.git
+>> gitprof clone git@gitlab.com/some-profile/some-repo.git
 
 ### Choose a profile to clone with ###
 [0] github                         (GitHub)
@@ -54,7 +54,7 @@ To clone a repository, just use `gitprof clone` instead of `git clone`. For exam
 [3] <CREATE NEW PROFILE>
 Enter a number from the list to choose an option [default=0]: 1
 
-Cloning 'git@github.com/some-profile/some-repo.git' with profile: gitlab
+Cloning 'git@gitlab.com/some-profile/some-repo.git' with profile: gitlab
 
 Setting local Git config values for 'some-repo'...
 Setting your Git name to 'MyUsername'...
@@ -68,7 +68,7 @@ Finished setting up your Git repository.
 If you have an existing repository whose config values you wish to change, you can `cd` into the repository and use `gitprof profile apply`. For example:
 
 ```bash
->> cd my-repo
+>> cd some-repo
 >> gitprof profile apply
 
 ### Choose a profile to apply ###
