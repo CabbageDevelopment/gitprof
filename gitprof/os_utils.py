@@ -19,37 +19,8 @@
 #  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
-from typing import List, Optional, Tuple
-
-from github import Github, GitAuthor, GitCommit
-from github.Repository import Repository
-
-g = Github()
+import platform
 
 
-def get_name_and_email(username: str) -> Optional[Tuple[str, str]]:
-    try:
-        user = g.get_user(username)
-        repos: List[Repository] = user.get_repos()
-
-        name, email = None, None
-
-        for r in repos:
-            commits = r.get_commits(author=user)
-            size = commits.totalCount
-
-            if size <= 0:
-                continue
-
-            last_commit: GitCommit = commits[size - 1].commit
-            author: GitAuthor = last_commit.author
-
-            name = author.name
-            email = author.email
-
-            if name and email:
-                break
-
-        return name, email
-    except:
-        return None
+def is_windows() -> bool:
+    return platform.system().lower() == "windows"

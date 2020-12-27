@@ -24,6 +24,7 @@ import re
 from typing import List
 
 ssh_dir = os.path.expanduser("~/.ssh")
+os.makedirs(ssh_dir, exist_ok=True)
 
 
 def create_ssh_key(name: str) -> str:

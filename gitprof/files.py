@@ -28,9 +28,14 @@ from json import JSONEncoder
 from os.path import join
 from typing import List, Any, Dict, Optional
 
-config_dir = os.path.expanduser(r"~\AppData\Local\gitprof")
-os.makedirs(config_dir, exist_ok=True)
+from gitprof import os_utils
 
+if os_utils.is_windows():
+    config_dir = os.path.expanduser(r"~\AppData\Local\gitprof")
+else:
+    config_dir = os.path.expanduser(r"~/.config/gitprof")
+
+os.makedirs(config_dir, exist_ok=True)
 config_file = join(config_dir, "config.json")
 
 

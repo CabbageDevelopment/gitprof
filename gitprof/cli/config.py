@@ -24,6 +24,8 @@ import sys
 
 import click
 
+from gitprof import os_utils
+from gitprof import ux
 from gitprof import files
 from gitprof.cli import root
 
@@ -43,7 +45,13 @@ def edit_config(editor: str):
     if editor:
         return os.system(fr'"{editor}" {files.config_file}')
 
-    os.system(f'start "" "{files.config_file}"')
+    if os_utils.is_windows():
+        return os.system(f'start "" "{files.config_file}"')
+
+    editor = ux.get_simple_input(
+        question="Please enter the command for your text editor (e.g. 'vi')"
+    )
+    return os.system(f'"{editor}" "{files.config_file}"')
 
 
 @config.command("rm", help="Delete the config file")

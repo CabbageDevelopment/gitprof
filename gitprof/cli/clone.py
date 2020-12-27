@@ -27,11 +27,22 @@ import sys
 import click
 
 from gitprof import command_utils
+from gitprof import os_utils
 from gitprof import ssh
 from gitprof import ux
 from gitprof.cli import root
 from gitprof.files import Config, Profile
 from gitprof.vcs import services
+
+
+def _create_clone_command(ssh_command, repo, dest) -> str:
+    if os_utils.is_windows():
+        return (
+            f"powershell -c "
+            + f'"git -c core.sshCommand="""{ssh_command}""" clone {repo}" "{dest}"'
+        )
+
+    return f'git -c core.sshCommand="{ssh_command}" clone "{repo}" "{dest}"'
 
 
 def do_clone(
@@ -40,13 +51,13 @@ def do_clone(
     if add_to_known_hosts:
         ssh_command = f"{ssh_command} -o StrictHostKeyChecking=no"
 
-    cmd = (
-        f"powershell -c "
-        f'"git -c core.sshCommand="""{ssh_command}""" clone {repo}" "{dest}"'
-    )
+    cmd = _create_clone_command(ssh_command, repo, dest)
 
     pipes = subprocess.Popen(
-        cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE
+        cmd,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        shell=True,
     )
     stdout, stderr = pipes.communicate()
 
@@ -128,7 +139,9 @@ def do_clone(
 @click.argument("repo")
 @click.option("-p", "--profile", help="Which profile to clone the repo with")
 def clone(repo: str, profile: str):
-    profile = command_utils.create_profile_interactive(profile)
+    profile = command_utils.choose_profile_interactive(
+        profile, title="Choose a profile to clone with"
+    )
 
     click.echo(f"Cloning '{repo}' with profile: {profile}")
     profile: Profile = Config().get_profile(name=profile)

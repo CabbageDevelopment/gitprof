@@ -30,7 +30,11 @@ from gitprof.files import Profile, Config
 
 def run_command(args: str):
     raw = subprocess.check_output(
-        args, stdin=None, stderr=None, shell=False, universal_newlines=False
+        args,
+        stdin=None,
+        stderr=None,
+        shell=True,
+        universal_newlines=False,
     ).decode("utf-8")
     return "".join(raw).strip().replace("\r\n", "")
 
@@ -49,7 +53,7 @@ def set_git_configs(profile: Profile):
     run_command(f'git config --local core.sshCommand "{ssh_command}"')
 
 
-def create_profile_interactive(profile: str) -> str:
+def choose_profile_interactive(profile: str, title: str) -> str:
     config = Config()
 
     while not profile:
@@ -65,7 +69,7 @@ def create_profile_interactive(profile: str) -> str:
                     options[index] = f"{options[index]}{whitespace}({profile.service})"
 
             chosen = ux.get_input_from_list(
-                title="Choose a profile to clone with",
+                title=title,
                 options=options,
                 fallback="create new profile",
                 fallback_index=-1,

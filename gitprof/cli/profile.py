@@ -98,7 +98,7 @@ def create_profile(name: str, username: str = None):
         print(f"Trying to find your Git committer name and email...")
         result = github_utils.get_name_and_email(username)
 
-        if len(result) == 2:
+        if result and len(result) == 2:
             name, email = result
 
             profile.git_name = name
@@ -106,6 +106,10 @@ def create_profile(name: str, username: str = None):
 
             click.echo(
                 f"\nYour name and email were found and are set as the defaults for the next questions."
+            )
+        else:
+            click.echo(
+                f"Failed to find name and email. You'll need to enter them manually.\n"
             )
 
     profile.git_name = ux.get_simple_input(
@@ -139,7 +143,9 @@ def create_profile(name: str, username: str = None):
 @profile.command("apply", help="Apply profile to current repository")
 @click.option("-p", "--profile", help="The profile to apply")
 def apply_profile(profile: str):
-    profile = command_utils.create_profile_interactive(profile)
+    profile = command_utils.choose_profile_interactive(
+        profile, title="Choose a profile to apply"
+    )
 
     profile: Profile = Config().get_profile(name=profile)
     command_utils.set_git_configs(profile)
