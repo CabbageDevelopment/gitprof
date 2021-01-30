@@ -30,11 +30,8 @@ import gitprof
 with open("README.md", encoding="utf-8") as f:
     long_description = f.read()
 
-dependencies = []
-
 with open("requirements.txt", "r") as f:
-    for line in f:
-        dependencies.append(re.findall(r"\s*(.*?)\s*", line)[0])
+    dependencies = re.findall(r"^\s*(.+?)\s*$", f.read(), flags=re.MULTILINE)
 
 setup(
     name="gitprof",
