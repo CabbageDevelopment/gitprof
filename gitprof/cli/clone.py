@@ -46,93 +46,33 @@ def _create_clone_command(ssh_command, repo, dest) -> str:
 
 
 def do_clone(
-    ssh_command: str, repo: str, profile: Profile, dest: str, add_to_known_hosts=False
-):
+    ssh_command: str,
+    repo: str,
+    dest: str,
+    add_to_known_hosts=False,
+) -> None:
     if add_to_known_hosts:
         ssh_command = f"{ssh_command} -o StrictHostKeyChecking=no"
 
     cmd = _create_clone_command(ssh_command, repo, dest)
 
-    pipes = subprocess.Popen(
+    process = subprocess.Popen(
         cmd,
         stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
         shell=True,
     )
-    stdout, stderr = pipes.communicate()
 
-    if pipes.returncode != 0:
-        ux.print_header("CLONE FAILED", newlines_before=2)
+    print()
 
-        stdout, stderr = (
-            i.decode("utf-8").replace("\r", "").strip() for i in (stdout, stderr)
+    for c in iter(lambda: process.stdout.read(1), b""):
+        sys.stdout.buffer.write(c)
+
+    process.wait()
+    if process.returncode != 0:
+        print(
+            f"\nError: clone failed. Please view the error message above for details."
         )
-        stdcombined = stdout + stderr
-
-        print(stdout)
-        print(stderr)
-
-        def advice():
-            ux.print_header("ADVICE", newlines_before=2)
-
-        not_in_known_hosts = re.findall(
-            r"Host key verification failed",
-            stdcombined,
-            re.MULTILINE,
-        )
-
-        if re.match("Identity file (.*) not accessible", stdcombined):
-            advice()
-            print("Your SSH key seems to be missing.")
-        elif "Permission denied" in stdcombined:
-            advice()
-
-            pub = ssh.get_public_key(profile.ssh_key)
-            print(f"\nYour SSH public key is:\n\n{pub}")
-
-            ux.sleep(1)
-
-            url = services.get_ssh_url_for(profile.service)
-            if url:
-                print(
-                    f"You may need to add the SSH key to "
-                    f"your account on '{profile.service}'."
-                )
-                yes = (
-                    ux.get_simple_input(
-                        question="Would you like to open the settings page for this [Y/n]",
-                        default="Y",
-                        show_default=False,
-                    ).lower()
-                    == "y"
-                )
-
-                if yes:
-                    import webbrowser
-
-                    webbrowser.open_new_tab(url)
-
-            sys.exit(1)
-        elif not_in_known_hosts:
-            print(stdcombined)
-
-            if (
-                ux.get_simple_input(
-                    question="The remote server is not in 'known_hosts'. "
-                    "Would you like to add it? [Y/n]",
-                    default="y",
-                    show_default=False,
-                    newlines_before=2,
-                ).lower()
-                == "y"
-            ):
-                print(f"Cloning with '-o StrictHostKeyChecking=no' in SSH command...")
-                do_clone(ssh_command, repo, profile, dest, add_to_known_hosts=True)
-            else:
-                print(f"Sorry, cannot clone when the host key is not accepted.")
-                sys.exit(1)
-        else:
-            sys.exit(1)
+        sys.exit(1)
 
 
 @root.command("clone", help="Clone a Git repository")
@@ -173,7 +113,7 @@ def clone(repo: str, profile: str):
     dest = re.findall(r".*/(.*?)\.git", repo)[0]
     ssh_command = ssh.get_ssh_command(ssh_key)
 
-    do_clone(ssh_command, repo, profile, dest)
+    do_clone(ssh_command, repo, dest)
     cwd = os.getcwd()
 
     try:
