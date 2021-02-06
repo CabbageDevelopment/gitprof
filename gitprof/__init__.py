@@ -23,7 +23,7 @@ import os
 
 from gitprof.cli import root
 
-__version__ = "1.0.1"
+__version__ = "1.1.0"
 
 
 def get_version_message():
