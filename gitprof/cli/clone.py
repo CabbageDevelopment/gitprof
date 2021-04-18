@@ -79,7 +79,7 @@ def do_clone(
 @click.argument("repo")
 @click.option("-p", "--profile", help="Which profile to clone the repo with")
 def clone(repo: str, profile: str):
-    profile = command_utils.choose_profile_interactive(
+    profile: Profile = command_utils.choose_profile_interactive(
         profile, title="Choose a profile to clone with"
     )
 
@@ -110,7 +110,7 @@ def clone(repo: str, profile: str):
         print(f"Error: can't find your SSH key at '{ssh_key}'.")
         sys.exit(1)
 
-    dest = re.findall(r".*/(.*?)\.git", repo)[0]
+    dest = re.findall(r"^.*/(.*?)(?:\.git)?$", repo)[0]
     ssh_command = ssh.get_ssh_command(ssh_key)
 
     do_clone(ssh_command, repo, dest)
